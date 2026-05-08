@@ -4,14 +4,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  function renderLoadingCards() {
+    activitiesList.innerHTML = `
+      <div class="activity-card loading-card" aria-hidden="true">
+        <div class="loading-line loading-title"></div>
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
+        <div class="loading-line loading-short"></div>
+      </div>
+      <div class="activity-card loading-card" aria-hidden="true">
+        <div class="loading-line loading-title"></div>
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
+        <div class="loading-line loading-short"></div>
+      </div>
+    `;
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
+    renderLoadingCards();
+
     try {
       const response = await fetch("/activities");
       const activities = await response.json();
 
-      // Clear loading message
+      // Clear loading cards
       activitiesList.innerHTML = "";
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -62,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
